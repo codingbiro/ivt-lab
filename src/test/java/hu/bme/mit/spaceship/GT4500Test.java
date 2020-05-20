@@ -99,6 +99,22 @@ public class GT4500Test {
   }
 
   @Test
+  public void fireTorpedo_Single_FireFirstIfSecondIsEmpty() {
+    // Arrange
+    when(this.mockTS1.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.isEmpty()).thenReturn(true);
+
+    // Act
+    this.ship.fireTorpedo(FiringMode.SINGLE);
+    this.ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Verify
+    verify(this.mockTS1, times(2)).fire(any(int.class));
+    verify(this.mockTS2, times(0)).fire(any(int.class));
+  }
+
+  @Test
   public void fireTorpedo_Single_DoNotFireWhenFailure() {
     // Arrange
     when(this.mockTS1.fire(any(int.class))).thenReturn(false);
@@ -111,6 +127,40 @@ public class GT4500Test {
     verify(this.mockTS1, times(1)).fire(any(int.class));
     verify(this.mockTS2, times(0)).fire(any(int.class));
     assertEquals(false, result);
+  }
+
+  @Test
+  public void fireTorpedo_Single_DoNotFireWhenBothEmpty() {
+    // Arrange
+    when(this.mockTS1.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.isEmpty()).thenReturn(true);
+    when(this.mockTS1.isEmpty()).thenReturn(true);
+
+    // Act
+    this.ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Verify
+    verify(this.mockTS1, times(0)).fire(any(int.class));
+    verify(this.mockTS2, times(0)).fire(any(int.class));
+  }
+
+  @Test
+  public void fireTorpedo_Single_DoNotFireWhenBothEmptyAndSecondaryIsNext() {
+    // Arrange
+    when(this.mockTS1.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.isEmpty()).thenReturn(true);
+    when(this.mockTS1.isEmpty()).thenReturn(false);
+
+    // Act
+    this.ship.fireTorpedo(FiringMode.SINGLE);
+    when(this.mockTS1.isEmpty()).thenReturn(true);
+    this.ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Verify
+    verify(this.mockTS1, times(1)).fire(any(int.class));
+    verify(this.mockTS2, times(0)).fire(any(int.class));
   }
 
   @Test
@@ -130,6 +180,22 @@ public class GT4500Test {
   }
 
   @Test
+  public void fireTorpedo_All_FireFirstIfSecondIsEmpty() {
+    // Arrange
+    when(this.mockTS1.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.fire(any(int.class))).thenReturn(true);
+    when(this.mockTS2.isEmpty()).thenReturn(true);
+
+    // Act
+    this.ship.fireTorpedo(FiringMode.ALL);
+    this.ship.fireTorpedo(FiringMode.ALL);
+
+    // Verify
+    verify(this.mockTS1, times(2)).fire(any(int.class));
+    verify(this.mockTS2, times(0)).fire(any(int.class));
+  }
+
+  @Test
   public void fireTorpedo_Null() {
     try {
       this.ship.fireTorpedo(null);
@@ -138,4 +204,12 @@ public class GT4500Test {
     }
   }
 
+  @Test
+  public void fireLaser_NotImplemented() {
+    // Act
+    boolean result = this.ship.fireLaser(FiringMode.ALL);    
+    
+    // Verify
+    assertEquals(false, result);
+  }
 }
